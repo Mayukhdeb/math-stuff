@@ -130,19 +130,33 @@ I'll break down the diagram shown above bit by bit:
 
     * For a given layer `Z = W(x) + B`, we can calculate the local gradients as:
 
-    1. The change in Z for a small change in W can be given by `dZ/dW`. By applying simple calculus, we get: 
+        1. The change in Z for a small change in W can be given by `dZ/dW`. By applying simple calculus, we get: 
 
-        ```
-        dZ/dW = x
-        ```
-    2. Similarly, we can find `dZ/dB`
+            ```
+            dZ/dW = x
+            ```
+        2. Similarly, we can find `dZ/dB`
 
-        ```
-        dZ/dB = 1
-        ```
-    3. For `Z` and `C` in the diagram above, we know that  `W(Z) + B = C`
+            ```
+            dZ/dB = 1
+            ```
+    * For `Z` and `C` in the diagram above, we know that  `W(Z) + B = C`
 
         ```
         dC/dZ = W
         ```
         Where `W` is the weights of layer 2 in the image given above.
+
+* **Backward pass**
+
+    The objective here is to find out how every weight and bias within the neural network affects the loss, i.e finding the gradient of the loss w.r.t each individual bias and weight. The chain rule has been used extensively here. 
+
+    I'll start with a simple idea:
+
+    * If `A` can influence `B` and `B` can influence `C`, then `A` can influence `C` through `B`. 
+
+    * Then if we know 
+        * the rate at which `B` changes for a small change in `A` (`dB/dA`) 
+        * the rate at which `C` changes for a small change in `B` (`dC/dB`)
+
+    * Then we can also find the rate at which `C` changes for a small change in `A` by "chaining" the derivatives i.e `dC/dA = dC/dB * dB/dA`
