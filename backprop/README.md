@@ -103,3 +103,46 @@ So we update the weights as follows:
 > Where `Wan` and `Wbn` are the updated weights after a single step. 
 
 ## How it works in practice
+
+<img src = "images/backprop_main.jpg" width = "100%" > 
+
+I'll break down the diagram shown above bit by bit: 
+
+* **Model**
+
+    A simple 3 layer neural network without any activation functions. The core idea remains the same, with or without activation layers. 
+
+* **Layer wise operations**
+
+    There are 3 layers in the model, hence 3 sets of operations are performed in each forward pass. 
+
+    For a single layer, with weights `W` and biases `B`, the output of the layer can be defined as Z like: 
+
+    ```
+    Z = W(x) + B
+    ```
+
+    Where `X` is the input.  
+
+* **Local gradients**
+
+    These are the gradients which define how one value within the model affects the other values within it's immediate proximity (loosely speaking).  
+
+    * For a given layer `Z = W(x) + B`, we can calculate the local gradients as:
+
+    1. The change in Z for a small change in W can be given by `dZ/dW`. By applying simple calculus, we get: 
+
+        ```
+        dZ/dW = x
+        ```
+    2. Similarly, we can find `dZ/dB`
+
+        ```
+        dZ/dB = 1
+        ```
+    3. For `Z` and `C` in the diagram above, we know that  `W(Z) + B = C`
+
+        ```
+        dC/dZ = W
+        ```
+        Where `W` is the weights of layer 2 in the image given above.
