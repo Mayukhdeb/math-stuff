@@ -1,14 +1,14 @@
-# A brief introduction to backpropagation 
+# A not-so-brief introduction to backpropagation 
 > "Learning from one's mistakes"
 
 I won't go into the brutal mathematical notations which are generally used, instead I'll try my best to explain it in terms of simple analogies and examples.  
 
 I'll divide this into 2 sections:
-1. The math behind backprop
-2. How it works in practice 
+1. Pre-requisites
+2. The rest of it
 
 
-## The math behind backprop
+## Pre-requisites
 
 **Let's walk down a hill first**
 
@@ -102,7 +102,7 @@ So we update the weights as follows:
 
 > Where `Wan` and `Wbn` are the updated weights after a single step. 
 
-## How it works in practice
+## The rest of it
 
 <img src = "images/backprop_main.jpg" width = "100%" > 
 
@@ -136,7 +136,6 @@ I'll break down the diagram shown above bit by bit:
             dZ/dW = x
             ```
         2. Similarly, we can find `dZ/dB`
-
             ```
             dZ/dB = 1
             ```
@@ -160,3 +159,5 @@ I'll break down the diagram shown above bit by bit:
         * the rate at which `C` changes for a small change in `B` (`dC/dB`)
 
     * Then we can also find the rate at which `C` changes for a small change in `A` by "chaining" the derivatives i.e `dC/dA = dC/dB * dB/dA`
+
+    We use the same concept here, but with fancier names and longer chains. 
