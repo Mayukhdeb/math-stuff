@@ -88,3 +88,77 @@ The non diagonal elements are the co-variances between `a` and `b` (`[0][1]`) an
 Negative and positive co-variance between 2 sets of values `x` and `y` can be given as:
 
 <img src = "images/negative-and-positive-covariance.png" width = "70%">
+
+## Preprocesssing 
+
+### Mean normalization
+
+It will have the effect of centering the data around 0.
+
+```python
+import matplotlib.pyplot as plt
+
+def mean_normalization(X):
+    newX = X - np.mean(X, axis = 0)
+    return newX
+
+b = np.random.normal(2, 0.5, 20)
+
+plt.plot(b, label = "original data")
+plt.plot(mean_normalization(b), label = "after mean normalization")
+plt.legend()
+plt.grid()
+plt.show()
+```
+
+### Standardization 
+
+Standardization is used to put all features on the same scale. It is done by dividing each element in the zero-centered (mean normalized) set by it's standard deviation. 
+
+```python
+def standardize(X):
+    standarized= mean_normalization(X)/np.std(X, axis = 0)
+    return standarized
+```
+
+For example, let us consider 2 sets of values in 2 different scales:
+
+```python
+a =  np.random.normal(3, 4, 300)
+b = np.random.normal(4, 2, 300)
+```
+
+When we standardise the two sets, one can see that the scales are the same and that the dataset is zero-centered according to both axes (shown below)
+
+```python
+all_data = np.array([a,b]).T
+standard_data = standardize(all_data)
+standard_a, standard_b = standard_data[:, 0], standard_data[:, 1]
+
+plt.scatter(a,b, label = "original")
+plt.scatter(standard_a,standard_b, label = "standardized")
+
+plt.xlim(-15,15)
+plt.ylim(-15,15)
+plt.legend()
+plt.grid()
+plt.tight_layout()
+plt.show()
+```
+
+<img src = "images/standardization.png">
+
+Now if we check the covariance matrix of the standardized data, we'll see that the variance of each set is 1. 
+
+```python
+print(np.cov(standard_data, rowvar=False, bias=True))
+```
+
+Would give someting like: 
+
+```
+[[1.         0.01873522]
+ [0.01873522 1.        ]]
+```
+
+Notice how all the diagonal elements are 1. 

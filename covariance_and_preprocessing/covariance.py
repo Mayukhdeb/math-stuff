@@ -1,3 +1,6 @@
+"""
+variance
+"""
 def variance(data):
     ## mean
     mean = sum(data) / len(data)
@@ -14,6 +17,9 @@ import numpy as np
 
 print (np.var(data))
 
+"""
+covariance
+"""
 def covariance(a, b):
 
     a_mean = sum(data) / len(data)
@@ -36,5 +42,3 @@ a = [10,8, 4]
 b = [6,4,2]
 
 print(np.cov(a,b))
-
-
