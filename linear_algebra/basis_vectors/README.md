@@ -65,6 +65,6 @@ print(np.dot(B_inverse, x))
 <img src = "images/b_inverse.jpg">
 
 
-Both of `3i + 2j` and `5p/3 + q/3` point to the same point in space (just like cheese), but in terms of different base units (i.e different languages, English and Japanese). 
+Both `3i + 2j` and `5p/3 + q/3` point to the same point in space (just like cheese), but in terms of different base units (i.e different languages, English and Japanese). 
 
 
