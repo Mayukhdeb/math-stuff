@@ -135,3 +135,11 @@ When using FFT, the speed comes down to `O(nlog(n))` which is much faster than `
 In a nutshell: 
 
 FFT and IFFT give us a faster way (than the usual) to convert a polynomial from it's vector form to it's value form and vice versa. The speed-up is obtained by exploiting the symmetries found in functions.
+
+References:
+
+[1] - https://www.youtube.com/watch?v=iTMn0Kt18tg
+
+[2] - https://jakevdp.github.io/blog/2013/08/28/understanding-the-fft/
+
+[3] - https://www.youtube.com/watch?v=h7apO7q16V0
