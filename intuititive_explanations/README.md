@@ -16,7 +16,8 @@ The order is really really random, but most of the stuff here is related to deep
 - dropout layers
 - weight decay 
 - learning rate
-- lr schedulers 
+
+ 
 - batchnorm
 - vanishing gradients
 - overfitting
@@ -153,15 +154,44 @@ A linear transformation is limited in its capacity to solve complex problems and
 
 * Sigmoid: Whatever be the input, the outputs of a sigmoid get bound between 0 and 1. 
 
-> This one has a problem too: for very high or very low values of inputs, there is almost no change to the prediction, causing a vanishing gradient problem.
-
-> ok theres another problem: let us consider the follwing situation: 
-
-"""
-out = self.w*x + self.b
-"""
-where x is the output of a sigmoid layer i.e its always >= 0
+> This one has a problem too: for very high or very low values of inputs, there is almost no change to the prediction, causing a vanishing gradient problem. OK  there's actually [another problem](https://rohanvarma.me/inputnormalization/)
             
-* Tanh
+* Tanh: This one's pretty similar to sigmoid, except that it's values range from -1 to 1 (unlike sigmoid where it's 0 to 1).
 
-TODO
+## Dropout layers 
+
+Whe training neural nets, we dont really want a certain small set of "neurons" to take the most of the responsibility behind every decision. 
+
+Imagine you're a teacher who has given his students a group project, you dont want it such that only a few people work in each group and the rest of them just chill. 
+
+So in order to fix that, you make it compulsory for 30% of the members (selected at random) to take a leave every day. This ensures that everyone in the group works equally hard  contribute to the outputs. 
+
+When you use a dropout layer, some number of layer outputs are randomly ignored or “dropped out.” it has the effect of making the training process noisy, forcing nodes within a layer to probabilistically take on more or less responsibility for the inputs.
+
+
+## Weight decay 
+
+Weight decay is a way to make sure that your neural net's weights dont get too "complex". I like to think of it as telling the NN: "dont act too smart". This is how it works: 
+
+```python
+def l2_penalty(w):
+    """
+    calculates the L2 penalty given a set of weights
+    """
+    return torch.sum(w.pow(2)) / 2
+
+loss = your_loss_function(label, pred) + weight_decay_constant * l2_penalty(weights^2)
+```
+
+Some smarties also like to call this L2 regularization. 
+
+## Batch Normalization
+
+A Batch Normalization layer transforms each input in the current mini-batch by:
+
+1. Subtracting the input mean in the current mini-batch
+2. Dividing it by the standard deviation.
+
+*Training Deep Neural Networks is complicated by the fact that the distribution of each layer’s inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities.*
+
+— [Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift, 2015](https://arxiv.org/abs/1502.03167)
