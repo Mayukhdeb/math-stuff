@@ -16,13 +16,12 @@ The order is really really random, but most of the stuff here is related to deep
 - dropout layers
 - weight decay 
 - learning rate
-
- 
 - batchnorm
 - vanishing gradients
 - overfitting
 - dying relu -> leaky relu
-- residual layers 
+- residual layers
+
 - loss functions when and why to use each 
     - MSE loss
     - cross entropy loss
@@ -195,3 +194,93 @@ A Batch Normalization layer transforms each input in the current mini-batch by:
 *Training Deep Neural Networks is complicated by the fact that the distribution of each layer’s inputs changes during training, as the parameters of the previous layers change. This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities.*
 
 — [Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift, 2015](https://arxiv.org/abs/1502.03167)
+
+## Vanishing Gradients 
+
+Activation functions like sigmoid squeeze large input values to be between 0 ane 1. Hence a large change in the input will only cause a small change in the output i.e very small gradient values. 
+
+*When n hidden layers use an activation like the sigmoid function, n small derivatives are multiplied together. Thus, the gradient decreases exponentially as we propagate down to the initial layers -- they tend to "vanish" as we propagate back to the early layers*
+
+**How can we fix it ?**
+
+* Use some other activation function like ReLU where the gradients dont become "too small".
+
+* Use Residual layers
+
+* Batch normalization also helps! because it makes sure that the |input| does not reach the outer edges of the sigmoid function (hence no small gradients)
+
+## Overfitting
+
+Imagine you have a school with only one student. In that school, you teach math. The problem is that your syllabus contains only 5 sums. So instead of actually learning the concepts, your student just memorizes each of the 5 sums before the exam.
+
+But then the student fails miserably in the exam because all that he did was memorize and not understand the concept. 
+
+This is exactly what overfitting is, it is where the model tends to "memorize" the training data instead of actually building up an understanding of the data.
+
+A telltale sign of overfitting is a very low training loss and a much higher validation loss (analogous to how the student performs well in the class by memorising but then fails the exam miserably)
+
+**How do we fix overfitting ?**
+
+* Data augmentation (equivalent to making more practice problems from the existing ones with modifications such that they look different to the stduent)
+
+* Dropout layers 
+
+* Weight decay 
+
+* Sometimes a larger batch size also helps
+
+* Reducing the complexity of the model (if you your student is smart enough, he can even memorize 1000 sums -- make sure you dont teach those kinds of students)
+
+Of course, all of the stuff I mentioned above may vary with the training data you have. 
+
+## Dying ReLU
+
+It is the scenario when a large number of ReLU neurons only output values of 0. It happens when the inputs are in the negative range. Notice how the gradient of the function is zero once it hits the negative.
+
+Once a ReLU ends up in this state, it is unlikely to recover, because the function gradient at 0 is also 0, so gradient descent learning will not alter the weights.
+
+When most of these neurons return output zero, the gradients fail to flow during backpropagation and the weights do not get updated. Ultimately a large part of the network becomes inactive and it is unable to learn further.
+
+**How do we fix it ?**
+
+* Use leaky ReLU: Since it is the flat section in the negative input range that causes the dying ReLU problem, we can fix it by keeping a small slope instead in the negative range such that the gradients dont "die out altogether".
+
+* Use a non symmetric initialization procedure which has been [described in the paper](https://arxiv.org/pdf/1903.06733.pdf). 
+
+## Residual layers
+
+One common problem that we've all faced when working with NNs is to find a way to make sure that the gradients do manage to gracefully travel back through a deep network. 
+
+One such way to make sure that the gradient information properly travels back through the layers is to use a residual layer.
+
+I really do not know why people like to call it a "layer", because it can be thought of more like an operation than that of a layer. 
+
+Instead of:
+
+```python
+y = layer(x)
+```
+
+we do:
+
+```python
+y = x + layer(x)
+```
+
+or even something like:
+
+```python
+y = x + layer_2(layer_1(x))  ## note that ive used the term layer loosely here, it might also include the activation functions, but hey since youre reading this far I think you get the idea.
+```
+
+## Loss functions
+
+In a school of neural networks, loss functions can be thought of as teachers. Some are good for certain tasks and are bad for others. You can't just go and tell your math teacher to teach you Geography. 
+
+In a similar way, certain loss functions are only good for certain types of tasks: 
+
+* **MSE Loss**: This one's mostly used for **regresssion problems** where the NN has to estimate a certain output value(s) given some input(s). \
+
+    The interesting part about this one is that it "punishes" the model a lot more for large "errors" (because it is "squared") when compared to small errors. Some people also call it "L2 loss".
+
+* **Negative Log-Likelihood Loss**: TODO
