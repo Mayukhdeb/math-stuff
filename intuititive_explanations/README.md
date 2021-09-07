@@ -24,9 +24,11 @@ The order is really really random, but most of the stuff here is related to deep
 
 - loss functions when and why to use each 
     - MSE loss
+    - NLL loss
     - cross entropy loss
-    - BCELoss
     - Dice score/jaccard index
+- bias variance tradeoff
+
 
 - why normalizing data is important, explain `transforms.Normalize`
 - what is label smoothing and why is is used sometimes 
@@ -273,6 +275,16 @@ or even something like:
 y = x + layer_2(layer_1(x))  ## note that ive used the term layer loosely here, it might also include the activation functions, but hey since youre reading this far I think you get the idea.
 ```
 
+## Linear vs logistic regression
+
+Linear regression: used for regression tasks, i.e tasks where the model has to predict a certain value given a set of inputs. One can use the good old MSE loss for this problem. 
+
+Logistic regression: Used to handle classification problems. Here we'll require losses like the log loss.
+
+## Multi class vs multilabel classification
+
+
+
 ## Loss functions
 
 In a school of neural networks, loss functions can be thought of as teachers. Some are good for certain tasks and are bad for others. You can't just go and tell your math teacher to teach you Geography. 
@@ -283,4 +295,60 @@ In a similar way, certain loss functions are only good for certain types of task
 
     The interesting part about this one is that it "punishes" the model a lot more for large "errors" (because it is "squared") when compared to small errors. Some people also call it "L2 loss".
 
-* **Negative Log-Likelihood Loss**: TODO
+    ```python
+    def mse_loss(pred, label):
+        loss = ((pred - label)**2)).mean()
+        return loss
+    ```
+
+* **Negative Log-Likelihood Loss/Log loss**: This one can be used in **classification problems**. The model is punished for making the correct prediction with smaller probabilities and encouraged for making the prediction with higher probabilities. The logarithm does the punishment. It is generally **paired up with a softmax layer** so that the output is a nice clean probability map.
+
+    It does not only care about the prediction being correct but also about the model being certain about the prediction with a high score. 
+
+    <img src = 'images/nll_loss.png' width = "60%">
+
+    > where `a` is the predicted value after passing through a softmax layer
+
+* **Cross entropy loss**: It's pretty much the same thing as NLL Loss. usually, we use the term log loss for binary classification problems, and the more general cross-entropy (loss) for the general case of multi-class classification. 
+
+    > Cross-entropy loss, or log loss, measures the performance of a classification model whose output is a probability value between 0 and 1. -[ml cheatsheet](https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html)
+
+    And obviously, this one's also used in **multi class clasification** problems, and also the logits need to be **passed through a softmax layer** as usual.
+
+    ```python
+    def cross_entropy_loss(pred, label):
+        ## people also call it the log loss
+        if label == 1:
+            return -log(pred)
+        else:
+            return -log(1 - pred)
+    ```
+
+
+* **Jaccard index/ Intersection over union**: 
+
+    <img src = 'images/jaccard_index_loss.png' width = "40%">
+
+    It is is the area of overlap between the predicted segmentation and the ground truth divided by the area of union between the predicted segmentation and the ground truth.
+
+* **Dice score**: 
+
+    <img src = 'images/dice_score.png' width = "60%">
+
+    The denominator is the sum of total boundary pixels of both prediction and ground truth, and the numerator is the sum of correctly predicted boundary pixels. 
+
+## Understanding bias and variance
+
+I'll just paste in some screenshots taken from [StatQuest](https://www.youtube.com/channel/UCtYLUTtgS3k1Fg4y5tAhLbw).
+
+<img src = 'images/bias.png' width = "60%">
+
+The red line represents the predictions made by the model, while the blue line is the ideal "fit". This is loosely the same thing as "underfitting" (high bias low variance)
+
+<img src = 'images/variance.png' width = "80%">
+
+The wiggly line does a great job at fitting to the training data, but fails badly on the test set. Here the model is said to have a high variance and a low bias. Which is again loosely related to overfitting. [Source](https://www.youtube.com/watch?v=EuBBz3bI-aA).
+    
+<img src = 'images/bias_and_variance.png' width = "80%">
+
+
