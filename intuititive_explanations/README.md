@@ -28,9 +28,8 @@ The order is really really random, but most of the stuff here is related to deep
     - cross entropy loss
     - Dice score/jaccard index
 - bias variance tradeoff
-
-
 - why normalizing data is important, explain `transforms.Normalize`
+
 - what is label smoothing and why is is used sometimes 
 - GANS:
     - Generator loss 
@@ -349,6 +348,74 @@ The red line represents the predictions made by the model, while the blue line i
 
 The wiggly line does a great job at fitting to the training data, but fails badly on the test set. Here the model is said to have a high variance and a low bias. Which is again loosely related to overfitting. [Source](https://www.youtube.com/watch?v=EuBBz3bI-aA).
     
-<img src = 'images/bias_and_variance.png' width = "80%">
+<img src = 'images/bias_and_variance.png' width = "60%">
 
+
+## Normalization vs Standardization
+
+**Normalization** is a scaling technique in which values are shifted and rescaled so that they end up ranging between 0 and 1. (max = 1, min = 0)
+
+
+<img src = 'images/normalization.png' width = "40%">
+
+> It is also known as Min-Max scaling.
+
+```python
+normalized_data = (data - data.min()) / (data.max() - data.min())
+```
+
+**Standardization** is a technique where the values are centered around the mean with a unit standard deviation. (mean = 0, std = 1)
+
+Given a training dataset, the input variables/labels may have different units (e.g. feet, kilometers, and hours) that, in turn, may mean the variables have different scales.
+
+Larger input values might lead to the model having larger weights (which leads to instabilities). Larger labels might lead to the model having larger gradients, which can make the learning process unstable.
+
+```python
+standardized_data = (data - data.mean()) / data.std()
+```
+
+<img src = 'images/standardization.png' width = "40%">
+
+## Understanding `torchvision.transforms.Normalize`
+
+Let us say that you have: 
+
+```python
+t = transforms.Normalize(
+            mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225]
+        )
+```
+here `mean` refers to the mean to be taken by each channel in sequence: r,g,b. Similarly, `std` refers to the standard deviation. Or as seen in the docs:
+
+```python
+output[channel] = (input[channel] - mean[channel]) / std[channel]
+```
+
+## Generative Adversarial Networks (GANs)
+
+I'll split it into 3 parts: 
+
+**The Generator**
+
+Given a random input `z` (known as the latent vector), the generator's objective is to generate an image `x` which resembles a real sample from the training data. 
+
+> Or as mentioned by Ian Goodfellow, a GANs job is similar to that of an art forger who makes fake paintings which "look real"
+
+**The discriminator**
+
+Given a generated image `x` and a real image `y`, the discriminator should be able to figure out which one is real (`1`) and which one is fake (`0`).
+
+> Or as mentioned by Ian Goodfellow, a Discriminator's job is similar to that of an art expert who can detect forged copies through visual inspection.
+
+**Training the Generator and Discriminator**
+
+> `D` = discriminator, `G` = Generator, `z` = latent vector, `x` = real image(s)
+
+* `D`: Minimize `D(G(z))` and maximise `D(x)`
+* `G`: Maximize `D(G(z))`
+
+**Mode collapse**
+
+It is when generator generates only one or a small set of outcomes. 
 
