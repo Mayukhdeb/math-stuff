@@ -37,6 +37,76 @@ The order is really really random, but most of the stuff here is related to deep
     - nash equilibrium 
  -->
 
+ ## Understanding bias and variance
+
+I'll just paste in some screenshots taken from [StatQuest](https://www.youtube.com/channel/UCtYLUTtgS3k1Fg4y5tAhLbw).
+
+<img src = 'images/bias.png' width = "60%">
+
+The red line represents the predictions made by the model, while the blue line is the ideal "fit". This is loosely the same thing as "underfitting" (high bias low variance)
+
+<img src = 'images/variance.png' width = "80%">
+
+The wiggly line does a great job at fitting to the training data, but fails badly on the test set. Here the model is said to have a high variance and a low bias. Which is again loosely related to overfitting. [Source](https://www.youtube.com/watch?v=EuBBz3bI-aA).
+    
+<img src = 'images/bias_and_variance.png' width = "60%">
+
+## Loss functions
+
+In a school of neural networks, loss functions can be thought of as teachers. Some are good for certain tasks and are bad for others. You can't just go and tell your math teacher to teach you Geography. 
+
+In a similar way, certain loss functions are only good for certain types of tasks: 
+
+* **MSE Loss**: This one's mostly used for **regresssion problems** where the NN has to estimate a certain output value(s) given some input(s). \
+
+    The interesting part about this one is that it "punishes" the model a lot more for large "errors" (because it is "squared") when compared to small errors. Some people also call it "L2 loss".
+
+    <img src = "images/MSE_loss.png" width = "40%">
+
+
+    ```python
+    def mse_loss(pred, label):
+        loss = ((pred - label)**2)).mean()
+        return loss
+    ```
+
+* **Negative Log-Likelihood Loss/Log loss**: This one can be used in **classification problems**. The model is punished for making the correct prediction with smaller probabilities and encouraged for making the prediction with higher probabilities. The logarithm does the punishment. It is generally **paired up with a softmax layer** so that the output is a nice clean probability map.
+
+    It does not only care about the prediction being correct but also about the model being certain about the prediction with a high score. 
+
+    <img src = 'images/nll_loss.png' width = "60%">
+
+    > where `a` is the predicted value after passing through a softmax layer
+
+* **Cross entropy loss**: It's pretty much the same thing as NLL Loss. usually, we use the term log loss for binary classification problems, and the more general cross-entropy (loss) for the general case of multi-class classification. 
+
+    > Cross-entropy loss, or log loss, measures the performance of a classification model whose output is a probability value between 0 and 1. -[ml cheatsheet](https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html)
+
+    And obviously, this one's also used in **multi class clasification** problems, and also the logits need to be **passed through a softmax layer** as usual.
+
+    ```python
+    def cross_entropy_loss(pred, label):
+        ## people also call it the log loss
+        if label == 1:
+            return -log(pred)
+        else:
+            return -log(1 - pred)
+    ```
+
+
+* **Jaccard index/ Intersection over union**: 
+
+    <img src = 'images/jaccard_index_loss.png' width = "40%">
+
+    It is is the area of overlap between the predicted segmentation and the ground truth divided by the area of union between the predicted segmentation and the ground truth.
+
+* **Dice score**: 
+
+    <img src = 'images/dice_score.png' width = "60%">
+
+    The denominator is the sum of total boundary pixels of both prediction and ground truth, and the numerator is the sum of correctly predicted boundary pixels. 
+
+
 ## Chain rule 
 
 If a small change in x causes a small change in y, and if a small change in y causes a small change in p. Then it is possible to also calculate what happens to p given a small change in x. 
@@ -148,19 +218,29 @@ A linear transformation is limited in its capacity to solve complex problems and
 **Which ones should I look out for ?**
 
 * ReLU: This one simply acts like an identity function for all values > 0. 
+
+<img src = "images/activation_relu.png" width = "30%">
+
 > One common problem we face with this one is the dying relu problem. Which gets fixed by using a leaky relu. 
 
 * Leaky ReLU: This one fixes the problem that relu had by not completely killing the gradients for negative values to zero.
 
+<img src = "images/activation_leaky_relu.png" width = "30%">
+
+
 * Sigmoid: Whatever be the input, the outputs of a sigmoid get bound between 0 and 1. 
+
+<img src = "images/activation_sigmoid.png" width = "40%">
 
 > This one has a problem too: for very high or very low values of inputs, there is almost no change to the prediction, causing a vanishing gradient problem. OK  there's actually [another problem](https://rohanvarma.me/inputnormalization/)
             
 * Tanh: This one's pretty similar to sigmoid, except that it's values range from -1 to 1 (unlike sigmoid where it's 0 to 1).
 
+<img src = "images/activation_tanh.jpeg" width = "40%">
+
 ## Dropout layers 
 
-Whe training neural nets, we dont really want a certain small set of "neurons" to take the most of the responsibility behind every decision. 
+When training neural nets, we dont really want a certain small set of "neurons" to take the most of the responsibility behind every decision. 
 
 Imagine you're a teacher who has given his students a group project, you dont want it such that only a few people work in each group and the rest of them just chill. 
 
@@ -183,7 +263,7 @@ def l2_penalty(w):
 loss = your_loss_function(label, pred) + weight_decay_constant * l2_penalty(weights^2)
 ```
 
-Some smarties also like to call this L2 regularization. 
+Some people also like to call this L2 regularization. 
 
 ## Batch Normalization
 
@@ -240,6 +320,8 @@ It is the scenario when a large number of ReLU neurons only output values of 0. 
 
 Once a ReLU ends up in this state, it is unlikely to recover, because the function gradient at 0 is also 0, so gradient descent learning will not alter the weights.
 
+<img src = "images/dying_relu.png" width = "40%">
+
 When most of these neurons return output zero, the gradients fail to flow during backpropagation and the weights do not get updated. Ultimately a large part of the network becomes inactive and it is unable to learn further.
 
 **How do we fix it ?**
@@ -274,6 +356,9 @@ or even something like:
 y = x + layer_2(layer_1(x))  ## note that ive used the term layer loosely here, it might also include the activation functions, but hey since youre reading this far I think you get the idea.
 ```
 
+<img src = "images/res_block.png" width = "40%">
+
+
 ## Linear vs logistic regression
 
 Linear regression: used for regression tasks, i.e tasks where the model has to predict a certain value given a set of inputs. One can use the good old MSE loss for this problem. 
@@ -282,74 +367,11 @@ Logistic regression: Used to handle classification problems. Here we'll require 
 
 ## Multi class vs multilabel classification
 
+Multi class: labels look like: `[0,0,1,0]` i.e only one output class at a time,
 
+Multi label: labels look like: `[1,0,1,0]` i.e can have multiple output classes at once.
 
-## Loss functions
-
-In a school of neural networks, loss functions can be thought of as teachers. Some are good for certain tasks and are bad for others. You can't just go and tell your math teacher to teach you Geography. 
-
-In a similar way, certain loss functions are only good for certain types of tasks: 
-
-* **MSE Loss**: This one's mostly used for **regresssion problems** where the NN has to estimate a certain output value(s) given some input(s). \
-
-    The interesting part about this one is that it "punishes" the model a lot more for large "errors" (because it is "squared") when compared to small errors. Some people also call it "L2 loss".
-
-    ```python
-    def mse_loss(pred, label):
-        loss = ((pred - label)**2)).mean()
-        return loss
-    ```
-
-* **Negative Log-Likelihood Loss/Log loss**: This one can be used in **classification problems**. The model is punished for making the correct prediction with smaller probabilities and encouraged for making the prediction with higher probabilities. The logarithm does the punishment. It is generally **paired up with a softmax layer** so that the output is a nice clean probability map.
-
-    It does not only care about the prediction being correct but also about the model being certain about the prediction with a high score. 
-
-    <img src = 'images/nll_loss.png' width = "60%">
-
-    > where `a` is the predicted value after passing through a softmax layer
-
-* **Cross entropy loss**: It's pretty much the same thing as NLL Loss. usually, we use the term log loss for binary classification problems, and the more general cross-entropy (loss) for the general case of multi-class classification. 
-
-    > Cross-entropy loss, or log loss, measures the performance of a classification model whose output is a probability value between 0 and 1. -[ml cheatsheet](https://ml-cheatsheet.readthedocs.io/en/latest/loss_functions.html)
-
-    And obviously, this one's also used in **multi class clasification** problems, and also the logits need to be **passed through a softmax layer** as usual.
-
-    ```python
-    def cross_entropy_loss(pred, label):
-        ## people also call it the log loss
-        if label == 1:
-            return -log(pred)
-        else:
-            return -log(1 - pred)
-    ```
-
-
-* **Jaccard index/ Intersection over union**: 
-
-    <img src = 'images/jaccard_index_loss.png' width = "40%">
-
-    It is is the area of overlap between the predicted segmentation and the ground truth divided by the area of union between the predicted segmentation and the ground truth.
-
-* **Dice score**: 
-
-    <img src = 'images/dice_score.png' width = "60%">
-
-    The denominator is the sum of total boundary pixels of both prediction and ground truth, and the numerator is the sum of correctly predicted boundary pixels. 
-
-## Understanding bias and variance
-
-I'll just paste in some screenshots taken from [StatQuest](https://www.youtube.com/channel/UCtYLUTtgS3k1Fg4y5tAhLbw).
-
-<img src = 'images/bias.png' width = "60%">
-
-The red line represents the predictions made by the model, while the blue line is the ideal "fit". This is loosely the same thing as "underfitting" (high bias low variance)
-
-<img src = 'images/variance.png' width = "80%">
-
-The wiggly line does a great job at fitting to the training data, but fails badly on the test set. Here the model is said to have a high variance and a low bias. Which is again loosely related to overfitting. [Source](https://www.youtube.com/watch?v=EuBBz3bI-aA).
-    
-<img src = 'images/bias_and_variance.png' width = "60%">
-
+<img src = "images/multiclass_vs_multilabel.jpeg" width = "60%">
 
 ## Normalization vs Standardization
 
